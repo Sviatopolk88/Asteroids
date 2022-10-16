@@ -9,7 +9,7 @@ public class BaseMovement : MonoBehaviour, IMove
 
     private void Awake()
     {
-        transform.Rotate(0, 0, Random.Range(0, 360));
+        
         _teleport = new ScreenTeleport();
     }
 

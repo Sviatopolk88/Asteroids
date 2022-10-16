@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerShooting : MonoBehaviour
@@ -8,25 +8,25 @@ public class PlayerShooting : MonoBehaviour
     [SerializeField] private Transform _shells; // Объект для хранения снарядов
 
     [SerializeField] private int _maxBullets = 20;
-    [SerializeField] private int _maxLasers = 3;
+    [SerializeField] private int _maxLaserCharges = 3;
 
     public float Timer => _timer;
-
-    private List<Transform> _bullets = new List<Transform>();
-    private List<Transform> _lasers = new List<Transform>();
+    public int LaserCharges => _availableLaserCharges;
+    public bool Recharge => LaserCharges < _maxLaserCharges;
 
     private PlayerInput _input;
     private ShootingLogic _shoot;
 
     private float _timer;
     private float _rechargeTime = 15f;
+    private int _availableLaserCharges;
 
     private void Awake()
     {
         _input = new PlayerInput();
-        
+
         _input.Player.ShootBullet.performed += context => _shoot.ShootBullet(this.transform);
-        _input.Player.ShootLaser.performed += context => _shoot.ShootLaser(this.transform);
+        _input.Player.ShootLaser.performed += context => LaserShoot();
     }
 
     private void OnEnable()
@@ -40,22 +40,39 @@ public class PlayerShooting : MonoBehaviour
 
     private void Start()
     {
+        _shoot = new ShootingLogic();
         ShellsInstantiate();
-        _shoot = new ShootingLogic(_bullets, _lasers);
+        _availableLaserCharges = _maxLaserCharges;
+        _timer = _rechargeTime;
+        
+        //StartCoroutine(Shooting()); // ЧИТ бесконечной стрельбы
     }
 
     private void Update()
     {
-        if (_shoot.AvailableLaserCharges != _shoot.MaxLasers)
+        
+        if (_availableLaserCharges < _maxLaserCharges)
         {
             _timer -= Time.deltaTime;
 
             if (_timer <= 0)
             {
-                _shoot.RechargeLaser();
+                _availableLaserCharges++;
                 _timer = _rechargeTime;
+
+                EventManager.SendChangeAmountLaserCharges(_availableLaserCharges);
             }
         }
+    }
+
+    private void LaserShoot()
+    {
+        if (_availableLaserCharges == 0) return;
+
+        _shoot.ShootLaser(this.transform);
+        _availableLaserCharges--;
+
+        EventManager.SendChangeAmountLaserCharges(_availableLaserCharges);
     }
 
     private void ShellsInstantiate()
@@ -63,15 +80,30 @@ public class PlayerShooting : MonoBehaviour
         for (int i = 0; i < _maxBullets; i++)
         {
             var bullet = Instantiate(_bulletPrefab, _shells);
-            _bullets.Add(bullet);
+            
+            _shoot.Bullets.Add(bullet);
             bullet.gameObject.SetActive(false);
         }
 
-        for (int i = 0; i < _maxLasers; i++)
+        for (int i = 0; i < _maxLaserCharges; i++)
         {
             var laser = Instantiate(_laserPrefab, _shells);
-            _lasers.Add(laser);
+            _shoot.LaserCharges.Add(laser);
             laser.gameObject.SetActive(false);
         }
     }
+
+    // ЧИТ
+    // Удалить перед билдом!!!
+    
+    private IEnumerator Shooting()
+    {
+        while (true)
+        {
+            _shoot.ShootBullet(this.transform);
+            yield return new WaitForSeconds(0.1f);
+        }
+        
+    }
+    
 }

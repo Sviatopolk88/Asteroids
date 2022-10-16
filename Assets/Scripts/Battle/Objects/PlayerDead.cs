@@ -7,7 +7,7 @@ public class PlayerDead : MonoBehaviour
         IHittable hitObject = collision.gameObject.GetComponent<IHittable>();
         if (hitObject != null)
         {
-            Debug.Log("Game over");
+            EventManager.SendGameOver();
         }
     }
 }

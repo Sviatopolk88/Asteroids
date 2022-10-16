@@ -6,7 +6,7 @@ public class UFO_Move : BaseMovement
 
     private void Start()
     {
-        _speed = 2.5f;
+        _speed = 3f;
     }
     public override void Move()
     {
