@@ -1,7 +1,6 @@
-using UnityEngine;
 using UnityEngine.Events;
 
-public class EventManager : MonoBehaviour
+public class EventManager
 {
     public static UnityEvent<int> OnAddPoints = new UnityEvent<int>();
     public static UnityEvent<int> OnChangeAmountLaserCharges = new UnityEvent<int>();
