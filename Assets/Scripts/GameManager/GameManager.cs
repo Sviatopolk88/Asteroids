@@ -13,14 +13,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform _bigAsteroidPrefab;
     [SerializeField] private Transform _smallAsteroidPrefab;
     [SerializeField] private Transform _cask;
+    [Range(3, 50)]
     [SerializeField] private int _amountAsteroids;
-    [SerializeField] private int _amountSpawnStartingAsteroids = 7;
-    [SerializeField] private int _amountChipsAsteroid = 3;
+    [Range(1, 10)]
+    [SerializeField] private int _amountSpawnStartingAsteroids;
 
     [Header("Time respawn")]
     [Space]
-    [SerializeField] private float _timeRespawnAsteroids = 9f;
-    [SerializeField] private float _timeRespawnUFO = 15f;
+    [SerializeField] private float _timeRespawnAsteroids;
+    [SerializeField] private float _timeRespawnUFO;
 
     [Space]
     [SerializeField] private PlayerShooting _shoot;
@@ -34,10 +35,11 @@ public class GameManager : MonoBehaviour
         _respawn = new RespawnLogic();
         _playerData = new PlayerData();
         AsteroidsInstantiate();
-        _respawn.RespawnAsteroid(_player, _amountSpawnStartingAsteroids);
+        _respawn.SpawnStartingAsteroids(_player, _amountSpawnStartingAsteroids);
         StartCoroutine(_respawn.SpawnAsteroids(_player, _timeRespawnAsteroids));
         StartCoroutine(_respawn.SpawnUFO(_ufo, _player, _timeRespawnUFO));
         BigAsteroidDestruction.OnAsteroidDestruction.AddListener(LaunchChips);
+        EventManager.OnSmallAsteroidDistruction.AddListener(RemoveActiveAsteroids);
         EventManager.OnAddPoints.AddListener(AddPoints);
         EventManager.OnChangeAmountLaserCharges.AddListener(AvailableLaserCharges);
         EventManager.OnGameOver.AddListener(GameOver);
@@ -56,6 +58,11 @@ public class GameManager : MonoBehaviour
     private void AvailableLaserCharges(int charges)
     {
         _ui.AvailableCharges(charges);
+    }
+
+    private void RemoveActiveAsteroids()
+    {
+        _respawn.RemoveActiveAsteroids();
     }
 
     private void AddPoints(int points)
@@ -78,7 +85,7 @@ public class GameManager : MonoBehaviour
             asteroid.gameObject.SetActive(false);
         }
         
-        for (int i = 0; i < _amountAsteroids * _amountChipsAsteroid; i++)
+        for (int i = 0; i < _amountAsteroids * _respawn.AmountChips * 2; i++)
         {
             var asteroid = Instantiate(_smallAsteroidPrefab, _cask);
             _respawn.SmallAsteroids.Add(asteroid);

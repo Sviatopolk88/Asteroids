@@ -8,6 +8,9 @@ public class RespawnLogic
     public List<Transform> SmallAsteroids = new();
 
     public int AmountAsteroids => BigAsteroids.Count;
+    public int SmallAsteroidsLimit => 21;
+    public int BigAsteroidsLimit => 7;
+    public int AmountChips => 3;
     public int IndexBigAsteroid
     {
         get
@@ -46,19 +49,25 @@ public class RespawnLogic
     private float _borderY => Camera.main.orthographicSize;
     private float _borderX => Camera.main.aspect * _borderY;
 
-    private int _amountChips = 3;
     private int _indexBigAsteroid;
     private int _indexSmallAsteroid;
-    private int _amountActiveAsteroids;
+    private int _amountActiveSmallAsteroids;
+    private int _amountActiveBigAsteroids;
 
     public IEnumerator SpawnAsteroids(Transform player, float timeRespawn)
     {
         while (true)
         {
             yield return new WaitForSeconds(timeRespawn);
-            if (_amountActiveAsteroids < 12)
+            if (_amountActiveSmallAsteroids < SmallAsteroidsLimit)
             {
-                RespawnAsteroid(player, _amountRespawnAsteroids);
+                for (int i = 0; i < _amountRespawnAsteroids; i++)
+                {
+                    if (_amountActiveBigAsteroids < BigAsteroidsLimit)
+                    {
+                        RespawnAsteroid(player);
+                    }
+                }
             }
         }
     }
@@ -72,29 +81,39 @@ public class RespawnLogic
             {
                 ufo.gameObject.SetActive(true);
                 SetPosition(ufo, player);
-                Debug.Log(ufo.position);
             }
         }
     }
 
-    public void RespawnAsteroid(Transform player, int amountAsteroids)
+    public void RemoveActiveAsteroids()
     {
-        var correctIndex = IndexBigAsteroid + amountAsteroids < AmountAsteroids;
-        var numberAsteroids = correctIndex ? IndexBigAsteroid + amountAsteroids : AmountAsteroids;
-        for (int i = IndexBigAsteroid; i < numberAsteroids; i++)
+        _amountActiveSmallAsteroids--;
+    }
+
+    public void SpawnStartingAsteroids(Transform player, int amount)
+    {
+        for (int i = 0; i < amount; i++)
         {
-            var asteroid = BigAsteroids[i];
-            asteroid.gameObject.SetActive(true);
-            SetPosition(asteroid, player);
-            _amountActiveAsteroids++;
-            IndexBigAsteroid++;
+            RespawnAsteroid(player);
         }
+    }
+
+    public void RespawnAsteroid(Transform player)
+    {
+        var correctIndex = IndexBigAsteroid++ < AmountAsteroids;
+        var numberAsteroids = correctIndex ? IndexBigAsteroid++ : AmountAsteroids;
+        var asteroid = BigAsteroids[numberAsteroids];
+        asteroid.gameObject.SetActive(true);
+        SetPosition(asteroid, player);
+        IndexBigAsteroid++;
+        _amountActiveBigAsteroids++;
     }
 
     public void LaunchSmallAsteroids(Vector2 startPosition)
     {
-        _amountActiveAsteroids--;
-        var numberAsteroids = IndexSmallAsteroid + _amountChips;
+        _amountActiveBigAsteroids--;
+        var numberAsteroids = IndexSmallAsteroid + AmountChips;
+        _amountActiveSmallAsteroids += AmountChips;
         for (int i = IndexSmallAsteroid; i < numberAsteroids; i++)
         {
             var asteroid = SmallAsteroids[i];

@@ -6,6 +6,7 @@ public class SmallAsteroidDistruction : MonoBehaviour, IHittable
     public void HitObject()
     {
         EventManager.SendAddPoints(_points);
+        EventManager.SendSmallAsteroidDistruction();
         this.gameObject.SetActive(false);
     }
 }

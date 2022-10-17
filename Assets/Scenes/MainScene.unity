@@ -1478,9 +1478,8 @@ MonoBehaviour:
   _bigAsteroidPrefab: {fileID: 1141606152032233178, guid: 5c0582019dd23fb43bd5be108d54853d, type: 3}
   _smallAsteroidPrefab: {fileID: 7874338778616479369, guid: 3d528cf75b3489f4287c27c7c0322183, type: 3}
   _cask: {fileID: 2015603902}
-  _amountAsteroids: 20
-  _amountSpawnStartingAsteroids: 5
-  _amountChipsAsteroid: 2
+  _amountAsteroids: 10
+  _amountSpawnStartingAsteroids: 3
   _timeRespawnAsteroids: 9
   _timeRespawnUFO: 15
   _shoot: {fileID: 1650100779}
