@@ -48,6 +48,7 @@ public class GameManager : MonoBehaviour
         PlayerData = new PlayerData();
         YandexData = new PlayerYandexData();
         LoadExtern();
+        SoundManager.Instance.BackMusicTurnOn();
         EventManager.OnAddPoints.AddListener(AddPoints);
         EventManager.OnGameOver.AddListener(CloseScene);
     }
@@ -77,7 +78,6 @@ public class GameManager : MonoBehaviour
         if (BestResult < PlayerData.Score)
         {
             BestResult = PlayerData.Score;
-            
         }
     }
 
@@ -94,6 +94,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(scene.name);
         Time.timeScale = 0;
         PlayerData.RemovePoints();
+        SoundManager.Instance.BackMusicTurnOff();
         ShowAdv();
     }
 }

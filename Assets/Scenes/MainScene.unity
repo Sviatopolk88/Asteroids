@@ -2732,6 +2732,7 @@ MonoBehaviour:
   _ufo: {fileID: 147178050}
   _smallAsteroidExplosion: {fileID: 1569791676}
   _asteroidExplosion: {fileID: 1743988975}
+  _backmusic: {fileID: 2052592164}
 --- !u!4 &1379616968
 Transform:
   m_ObjectHideFlags: 0

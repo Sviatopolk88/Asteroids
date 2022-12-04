@@ -9,6 +9,9 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioSource _ufo;
     [SerializeField] private AudioSource _smallAsteroidExplosion;
     [SerializeField] private AudioSource _asteroidExplosion;
+    [SerializeField] private AudioSource _backmusic;
+
+    private bool _isBackMusicPlaying = false;
 
     private void Awake()
     {
@@ -21,7 +24,6 @@ public class SoundManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        
     }
 
     public void LaserShot()
@@ -58,5 +60,21 @@ public class SoundManager : MonoBehaviour
     public void RocketStop()
     {
         _rocket.Stop();
+    }
+
+    public void BackMusicTurnOn()
+    {
+        if (!_isBackMusicPlaying)
+        {
+            _backmusic.Play();
+            _isBackMusicPlaying = true;
+        }
+            
+    }
+
+    public void BackMusicTurnOff()
+    {
+        _backmusic.Stop();
+        _isBackMusicPlaying = false;
     }
 }
