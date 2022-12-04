@@ -7,6 +7,7 @@ public class SmallAsteroidDistruction : MonoBehaviour, IHittable
     {
         EventManager.SendAddPoints(_points);
         EventManager.SendSmallAsteroidDistruction();
+        SoundManager.Instance.SmallAsteroidExplosion();
         this.gameObject.SetActive(false);
     }
 }

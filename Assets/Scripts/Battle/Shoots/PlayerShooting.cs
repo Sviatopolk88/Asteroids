@@ -44,8 +44,6 @@ public class PlayerShooting : MonoBehaviour
         ShellsInstantiate();
         _availableLaserCharges = _maxLaserCharges;
         _timer = _rechargeTime;
-        
-        //StartCoroutine(Shooting()); // ЧИТ бесконечной стрельбы
     }
 
     private void Update()
@@ -67,6 +65,7 @@ public class PlayerShooting : MonoBehaviour
 
     private void LaserShoot()
     {
+        if (Time.timeScale == 0) return;
         if (_availableLaserCharges == 0) return;
 
         _shoot.ShootLaser(this.transform);
@@ -92,18 +91,4 @@ public class PlayerShooting : MonoBehaviour
             laser.gameObject.SetActive(false);
         }
     }
-
-    // ЧИТ
-    // Удалить перед билдом!!!
-    
-    private IEnumerator Shooting()
-    {
-        while (true)
-        {
-            _shoot.ShootBullet(this.transform);
-            yield return new WaitForSeconds(0.1f);
-        }
-        
-    }
-    
 }

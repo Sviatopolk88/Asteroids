@@ -6,6 +6,7 @@ public class EventManager
     public static UnityEvent<int> OnChangeAmountLaserCharges = new UnityEvent<int>();
     public static UnityEvent OnGameOver = new UnityEvent();
     public static UnityEvent OnSmallAsteroidDistruction = new UnityEvent();
+    public static UnityEvent<int> OnChangeScore = new();
 
     public static void SendSmallAsteroidDistruction()
     {
@@ -25,5 +26,10 @@ public class EventManager
     public static void SendGameOver()
     {
         OnGameOver.Invoke();
+    }
+
+    public static void SendChangeScore(int score)
+    {
+        OnChangeScore.Invoke(score);
     }
 }

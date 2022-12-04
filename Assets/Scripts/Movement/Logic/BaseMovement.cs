@@ -9,7 +9,6 @@ public class BaseMovement : MonoBehaviour, IMove
 
     private void Awake()
     {
-        
         _teleport = new ScreenTeleport();
     }
 

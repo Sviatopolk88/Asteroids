@@ -10,6 +10,7 @@ public class BigAsteroidDestruction : MonoBehaviour, IHittable
     {
         OnAsteroidDestruction.Invoke(this.transform.position);
         EventManager.SendAddPoints(_points);
+        SoundManager.Instance.AsteroidExplosion();
         this.gameObject.SetActive(false);
     }
 }

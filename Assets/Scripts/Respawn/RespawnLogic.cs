@@ -81,6 +81,7 @@ public class RespawnLogic
             {
                 ufo.gameObject.SetActive(true);
                 SetPosition(ufo, player);
+                SoundManager.Instance.MoveUFO();
             }
         }
     }

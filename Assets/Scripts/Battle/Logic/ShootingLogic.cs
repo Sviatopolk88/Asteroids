@@ -13,6 +13,8 @@ public class ShootingLogic
 
     public void ShootBullet(Transform player)
     {
+        if (Time.timeScale == 0) return;
+
         var bullet = Bullets[_indexBul];
         Shoot(bullet, player);
 
@@ -39,6 +41,7 @@ public class ShootingLogic
         {
             _indexLaser = 0;
         }
+        SoundManager.Instance.LaserShot();
     }
     
     public void Shoot(Transform shell, Transform player)
@@ -46,5 +49,6 @@ public class ShootingLogic
         shell.gameObject.SetActive(true);
         shell.transform.position = player.position;
         shell.GetComponent<ShellHittableBase>().Shoot(player.rotation.eulerAngles);
+        SoundManager.Instance.LaserShot();
     }
 }

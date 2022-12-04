@@ -1,102 +1,104 @@
+using System.Runtime.InteropServices;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Objects")]
-    [Space]
-    [SerializeField] private Transform _player;
-    [SerializeField] private Transform _ufo;
-    [SerializeField] private UI_Manager _ui;
+    public static GameManager Instance;
 
-    [Header("Respawn asteroids")]
-    [Space]
-    [SerializeField] private Transform _bigAsteroidPrefab;
-    [SerializeField] private Transform _smallAsteroidPrefab;
-    [SerializeField] private Transform _cask;
-    [Range(3, 50)]
-    [SerializeField] private int _amountAsteroids;
-    [Range(1, 10)]
-    [SerializeField] private int _amountSpawnStartingAsteroids;
+    public PlayerData PlayerData;
+    public PlayerYandexData YandexData;
 
-    [Header("Time respawn")]
-    [Space]
-    [SerializeField] private float _timeRespawnAsteroids;
-    [SerializeField] private float _timeRespawnUFO;
+    [SerializeField] private TextMeshProUGUI _testTxt;
+    [SerializeField] private TextMeshProUGUI _lngTxt;
 
-    [Space]
-    [SerializeField] private PlayerShooting _shoot;
+    private int tst = 0;
 
-    private RespawnLogic _respawn;
+    public static int BestResult { get; private set; }
 
-    private PlayerData _playerData;
+    [DllImport("__Internal")]
+    private static extern void SaveExtern(string data);
+
+    [DllImport("__Internal")]
+    private static extern void LoadExtern();
+
+    [DllImport("__Internal")]
+    private static extern void SetToLeaderboard(int value);
+
+    [DllImport("__Internal")]
+    private static extern void ShowAdv();
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
-        _respawn = new RespawnLogic();
-        _playerData = new PlayerData();
-        AsteroidsInstantiate();
-        _respawn.SpawnStartingAsteroids(_player, _amountSpawnStartingAsteroids);
-        StartCoroutine(_respawn.SpawnAsteroids(_player, _timeRespawnAsteroids));
-        StartCoroutine(_respawn.SpawnUFO(_ufo, _player, _timeRespawnUFO));
-        BigAsteroidDestruction.OnAsteroidDestruction.AddListener(LaunchChips);
-        EventManager.OnSmallAsteroidDistruction.AddListener(RemoveActiveAsteroids);
+        PlayerData = new PlayerData();
+        YandexData = new PlayerYandexData();
+        LoadExtern();
         EventManager.OnAddPoints.AddListener(AddPoints);
-        EventManager.OnChangeAmountLaserCharges.AddListener(AvailableLaserCharges);
-        EventManager.OnGameOver.AddListener(GameOver);
+        EventManager.OnGameOver.AddListener(CloseScene);
+    }
+    public void Save()
+    {
+        string jsonString = JsonUtility.ToJson(YandexData);
+        SaveExtern(jsonString);
     }
 
-    private void Update()
+    public void SetPlayerData(string value)
     {
-        if (_shoot.Recharge) RechargeTimer();
-    }
-
-    private void RechargeTimer()
-    {
-        _ui.RechargeTimer(_shoot.Timer);
-    }
-
-    private void AvailableLaserCharges(int charges)
-    {
-        _ui.AvailableCharges(charges);
-    }
-
-    private void RemoveActiveAsteroids()
-    {
-        _respawn.RemoveActiveAsteroids();
+        YandexData = JsonUtility.FromJson<PlayerYandexData>(value);
+        if (_testTxt)
+        {
+            _testTxt.text = YandexData.BestResult.ToString();
+        }
+        
+        if (YandexData.BestResult > 0 && YandexData.BestResult > BestResult)
+        {
+            BestResult = YandexData.BestResult;
+        }
     }
 
     private void AddPoints(int points)
     {
-        _playerData.AddPoints(points);
-        _ui.UpdateScore(_playerData.Score);
-    }
-
-    private void LaunchChips(Vector2 asteroidPosition)
-    {
-        _respawn.LaunchSmallAsteroids(asteroidPosition);
-    }
-
-    private void AsteroidsInstantiate()
-    {
-        for (int i = 0; i < _amountAsteroids; i++)
+        PlayerData.AddPoints(points);
+        if (BestResult < PlayerData.Score)
         {
-            var asteroid = Instantiate(_bigAsteroidPrefab, _cask);
-            _respawn.BigAsteroids.Add(asteroid);
-            asteroid.gameObject.SetActive(false);
+            BestResult = PlayerData.Score;
+            
+        }
+    }
+
+    public void CloseScene()
+    {
+        if (YandexData.BestResult < BestResult)
+        {
+            YandexData.BestResult = BestResult;
+            Save();
+            SetToLeaderboard(BestResult);
         }
         
-        for (int i = 0; i < _amountAsteroids * _respawn.AmountChips * 2; i++)
-        {
-            var asteroid = Instantiate(_smallAsteroidPrefab, _cask);
-            _respawn.SmallAsteroids.Add(asteroid);
-            asteroid.gameObject.SetActive(false);
-        }
-    }
-
-    public void GameOver()
-    {
-        _ui.OpenMenu();
-        _ui.Result(_playerData.Score);
+        var scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
         Time.timeScale = 0;
+        PlayerData.RemovePoints();
+        ShowAdv();
     }
+}
+
+public class PlayerYandexData
+{
+    public int BestResult;
 }

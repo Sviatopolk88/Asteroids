@@ -67,6 +67,17 @@
                 },
                 {
                     "name": "",
+                    "id": "78df2893-7d11-46b1-9909-6fd1ad239932",
+                    "path": "<Touchscreen>/primaryTouch/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Phone",
+                    "action": "Acceleration",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "b4401181-db79-46a5-ae4c-684eac8abeeb",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -78,8 +89,30 @@
                 },
                 {
                     "name": "",
+                    "id": "0806a582-36f2-4052-8a20-32c4f2ea786f",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "ShootBullet",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "8abdb915-8d5c-433f-a76a-35ab409a9e7b",
                     "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard & Mouse",
+                    "action": "ShootLaser",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c1e8df2d-6588-4beb-9024-5bb8c3acccd9",
+                    "path": "<Keyboard>/shift",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard & Mouse",
@@ -152,6 +185,17 @@
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "a3bba8a5-5489-4d4a-ab5b-1df774d84041",
+                    "path": "<Touchscreen>/primaryTouch/radius",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Phone",
+                    "action": "Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -196,6 +240,17 @@
                 },
                 {
                     "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Phone",
+            "bindingGroup": "Phone",
+            "devices": [
+                {
+                    "devicePath": "<Touchscreen>",
                     "isOptional": false,
                     "isOR": false
                 }

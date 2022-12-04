@@ -13,10 +13,13 @@ public class PlayerMove : MonoBehaviour
 
     private int _rotationCoefficient = -300;
 
+    private bool _flagAcceleration = false;
+
     private void Awake()
     {
         _input = new PlayerInput();
         _teleport = new ScreenTeleport();
+        transform.position = new Vector3(0 - _teleport.RightPanelSize / 2, 0, 0);
     }
 
     private void OnEnable()
@@ -48,9 +51,21 @@ public class PlayerMove : MonoBehaviour
 
             _speed += new Vector2(moveX, moveY) / 10;
             MaxSpeed();
+            if (_flagAcceleration == false)
+            {
+                _flagAcceleration = true;
+                SoundManager.Instance.RocketMove();
+            }
         }
+        else
+        {
+            SoundManager.Instance.RocketStop();
+            _flagAcceleration = false;
+        }
+
         _speed -= _speed / 100;
         transform.Translate(_speed * Time.deltaTime, Space.World);
+        
     }
 
     private void MaxSpeed()

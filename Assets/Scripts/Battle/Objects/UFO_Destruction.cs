@@ -6,6 +6,7 @@ public class UFO_Destruction : MonoBehaviour, IHittable
     public void HitObject()
     {
         EventManager.SendAddPoints(_points);
+        SoundManager.Instance.DestroyUFO();
         this.gameObject.SetActive(false);
     }
 }
