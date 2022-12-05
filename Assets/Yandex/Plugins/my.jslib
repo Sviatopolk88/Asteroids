@@ -56,10 +56,11 @@ mergeInto(LibraryManager.library, {
             callbacks: {
                 onClose: function (wasShown) {
                     // Действие после рекламы
-                    // some action after close
+                    myGameInstance.SendMessage('GameManager', 'PlayBackMusic');
                 },
                 onError: function (error) {
                     // some action on error
+                    myGameInstance.SendMessage('GameManager', 'PlayBackMusic');
                 }
             }
         })

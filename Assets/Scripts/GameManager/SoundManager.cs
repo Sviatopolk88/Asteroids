@@ -11,8 +11,6 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioSource _asteroidExplosion;
     [SerializeField] private AudioSource _backmusic;
 
-    private bool _isBackMusicPlaying = false;
-
     private void Awake()
     {
         if (Instance == null)
@@ -64,17 +62,11 @@ public class SoundManager : MonoBehaviour
 
     public void BackMusicTurnOn()
     {
-        if (!_isBackMusicPlaying)
-        {
-            _backmusic.Play();
-            _isBackMusicPlaying = true;
-        }
-            
+        _backmusic.Play();
     }
 
     public void BackMusicTurnOff()
     {
         _backmusic.Stop();
-        _isBackMusicPlaying = false;
     }
 }

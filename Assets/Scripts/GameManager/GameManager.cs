@@ -48,7 +48,6 @@ public class GameManager : MonoBehaviour
         PlayerData = new PlayerData();
         YandexData = new PlayerYandexData();
         LoadExtern();
-        SoundManager.Instance.BackMusicTurnOn();
         EventManager.OnAddPoints.AddListener(AddPoints);
         EventManager.OnGameOver.AddListener(CloseScene);
     }
@@ -96,6 +95,11 @@ public class GameManager : MonoBehaviour
         PlayerData.RemovePoints();
         SoundManager.Instance.BackMusicTurnOff();
         ShowAdv();
+    }
+
+    public void PlayBackMusic()
+    {
+        SoundManager.Instance.BackMusicTurnOn();
     }
 }
 
