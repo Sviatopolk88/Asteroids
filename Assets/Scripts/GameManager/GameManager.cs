@@ -1,109 +1,126 @@
-using System.Runtime.InteropServices;
-using TMPro;
+using InstantGamesBridge;
+using InstantGamesBridge.Modules.Leaderboard;
+using InstantGamesBridge.Modules.Advertisement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    private const string _yandexLeaderboardNameInput = "Leaders";
 
     public PlayerData PlayerData;
-    public PlayerYandexData YandexData;
 
-    [SerializeField] private TextMeshProUGUI _testTxt;
-    [SerializeField] private TextMeshProUGUI _lngTxt;
-
-    private int tst = 0;
+    [SerializeField] private MainMenu _mainMenu;
+    [SerializeField] private UI_EndGameWindow _endGameWindow;
+    [SerializeField] private Spawner _spawner;
+    [SerializeField] private PlayerMove _playerMove;
+    [SerializeField] private PlayerShooting _playerShooting;
 
     public static int BestResult { get; private set; }
-
-    [DllImport("__Internal")]
-    private static extern void SaveExtern(string data);
-
-    [DllImport("__Internal")]
-    private static extern void LoadExtern();
-
-    [DllImport("__Internal")]
-    private static extern void SetToLeaderboard(int value);
-
-    [DllImport("__Internal")]
-    private static extern void ShowAdv();
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     private void Start()
     {
         PlayerData = new PlayerData();
-        YandexData = new PlayerYandexData();
-        LoadExtern();
+        _playerMove.enabled = false;
+        _playerShooting.enabled = false;
+        
+        if (Bridge.player.isAuthorized)
+        {
+            GetScore();
+        }
+
+        SoundManager.Instance.BackMusicTurnOff();
+        OnShowInterstitial();
+
         EventManager.OnAddPoints.AddListener(AddPoints);
-        EventManager.OnGameOver.AddListener(CloseScene);
-    }
-    public void Save()
-    {
-        string jsonString = JsonUtility.ToJson(YandexData);
-        SaveExtern(jsonString);
+        EventManager.OnGameOver.AddListener(StopGame);
     }
 
-    public void SetPlayerData(string value)
+    private void GetScore()
     {
-        YandexData = JsonUtility.FromJson<PlayerYandexData>(value);
-        if (_testTxt)
+        Bridge.leaderboard.GetScore(
+            (success, score) =>
+            {
+                if (success)
+                {
+                    BestResult = score;
+                    _mainMenu.Result(BestResult);
+                }
+                else
+                {
+                    BestResult = 0;
+                    _mainMenu.Result(BestResult);
+                }
+            },
+            new GetScoreYandexOptions(_yandexLeaderboardNameInput));
+    }
+
+    private void OnShowInterstitial()
+    {
+        // Необязательный параметр, игнорировать ли минимальную задержку
+        var ignoreDelay = false; // По умолчанию = false
+        Bridge.advertisement.ShowInterstitial
+            (
+            success => {
+                if (success)
+                {
+                    // Success
+                }
+                else
+                {
+                    // Error
+                }
+            },
+            new ShowInterstitialYandexOptions(ignoreDelay)
+            );
+    }
+
+    public void StartGame()
+    {
+        SoundManager.Instance.BackMusicTurnOn();
+        _spawner.StartSpawnAsteroid();
+        _playerMove.enabled = true;
+        _playerShooting.enabled = true;
+    }
+
+    private void StopGame()
+    {
+        _spawner.StopSpawner();
+        SoundManager.Instance.RocketStop();
+        _playerMove.enabled = false;
+        _playerShooting.enabled = false;
+
+        if (PlayerData.Score > BestResult)
         {
-            _testTxt.text = YandexData.BestResult.ToString();
+            if (Bridge.player.isAuthorized)
+            {
+                SetScore();
+            }
         }
-        
-        if (YandexData.BestResult > 0 && YandexData.BestResult > BestResult)
-        {
-            BestResult = YandexData.BestResult;
-        }
+
+        _endGameWindow.gameObject.SetActive(true);
+        _endGameWindow.Results(BestResult, PlayerData.Score);
     }
 
     private void AddPoints(int points)
     {
         PlayerData.AddPoints(points);
-        if (BestResult < PlayerData.Score)
-        {
-            BestResult = PlayerData.Score;
-        }
     }
 
-    public void CloseScene()
+    private void SetScore()
     {
-        if (YandexData.BestResult < BestResult)
-        {
-            YandexData.BestResult = BestResult;
-            Save();
-            SetToLeaderboard(BestResult);
-        }
-        
-        var scene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(scene.name);
-        Time.timeScale = 0;
-        PlayerData.RemovePoints();
-        SoundManager.Instance.BackMusicTurnOff();
-        ShowAdv();
-    }
-
-    public void PlayBackMusic()
-    {
-        SoundManager.Instance.BackMusicTurnOn();
+        Bridge.leaderboard.SetScore(
+            success =>
+            {
+                if (success)
+                {
+                    // Success
+                }
+                else
+                {
+                    // Error
+                }
+            },
+            new SetScoreYandexOptions(PlayerData.Score, _yandexLeaderboardNameInput));
     }
 }
 
-public class PlayerYandexData
-{
-    public int BestResult;
-}

@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,33 +5,16 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    [Header("Main menu")]
-    [Space]
     [SerializeField] private GameObject _mainMenu;
+    
     [SerializeField] private TextMeshProUGUI _result;
-    //[SerializeField] private TextMeshProUGUI _raitTxt;
     [SerializeField] private Button _newGameBtn;
-    //[SerializeField] private Button _rateBtn;
-
-    /*
-
-    [DllImport("__Internal")]
-    private static extern void RateGame();
-    */
+    [SerializeField] private GameManager _gameManager;
 
     private void Start()
     {
-        
-
         _newGameBtn.onClick.AddListener(NewGame);
-        //_rateBtn.onClick.AddListener(RateGameButton);
-        Time.timeScale = 0;
-        if (GameManager.BestResult > 0)
-        {
-            Result(GameManager.BestResult);
-        }
     }
-
 
     public void Result(int score)
     {
@@ -42,13 +24,7 @@ public class MainMenu : MonoBehaviour
     private void NewGame()
     {
         _mainMenu.SetActive(false);
-        Time.timeScale = 1;
+        _gameManager.StartGame();
     }
 
-    
-    public void RateGameButton()
-    {
-        //RateGame();
-    }
-    
 }

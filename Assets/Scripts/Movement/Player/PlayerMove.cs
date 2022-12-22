@@ -19,7 +19,6 @@ public class PlayerMove : MonoBehaviour
     {
         _input = new PlayerInput();
         _teleport = new ScreenTeleport();
-        transform.position = new Vector3(0 - _teleport.RightPanelSize / 2, 0, 0);
     }
 
     private void OnEnable()

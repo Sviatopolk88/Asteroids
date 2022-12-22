@@ -22,16 +22,28 @@ public class Spawner : MonoBehaviour
 
     private RespawnLogic _respawn;
 
-    private void Start()
+    private Coroutine _spawnAsteroidsRoutine;
+    private Coroutine _spawnUFORoutine;
+
+    //private void Start()
+    public void StartSpawnAsteroid()
     {
         _respawn = new RespawnLogic();
 
         AsteroidsInstantiate();
         _respawn.SpawnStartingAsteroids(_player, _amountSpawnStartingAsteroids);
-        StartCoroutine(_respawn.SpawnAsteroids(_player, _timeRespawnAsteroids));
-        StartCoroutine(_respawn.SpawnUFO(_ufo, _player, _timeRespawnUFO));
+        
+        _spawnAsteroidsRoutine = StartCoroutine(_respawn.SpawnAsteroids(_player, _timeRespawnAsteroids));
+        _spawnUFORoutine = StartCoroutine(_respawn.SpawnUFO(_ufo, _player, _timeRespawnUFO));
+        
         BigAsteroidDestruction.OnAsteroidDestruction.AddListener(LaunchChips);
         EventManager.OnSmallAsteroidDistruction.AddListener(RemoveActiveAsteroids);
+    }
+
+    public void StopSpawner()
+    {
+        StopCoroutine(_spawnAsteroidsRoutine);
+        StopCoroutine(_spawnUFORoutine);
     }
 
     private void RemoveActiveAsteroids()
