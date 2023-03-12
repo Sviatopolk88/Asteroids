@@ -10,6 +10,8 @@ public class PlayerShooting : MonoBehaviour
     [SerializeField] private int _maxBullets = 20;
     [SerializeField] private int _maxLaserCharges = 3;
 
+    [SerializeField] private float _speedShooting;
+
     public float Timer => _timer;
     public int LaserCharges => _availableLaserCharges;
     public bool Recharge => LaserCharges < _maxLaserCharges;
@@ -20,21 +22,24 @@ public class PlayerShooting : MonoBehaviour
     private float _timer;
     private float _rechargeTime = 15f;
     private int _availableLaserCharges;
+    private bool _isActiveShooting;
 
     private void Awake()
     {
         _input = new PlayerInput();
 
-        _input.Player.ShootBullet.performed += context => _shoot.ShootBullet(this.transform);
-        _input.Player.ShootLaser.performed += context => LaserShoot();
+        //_input.Player.ShootBullet.performed += context => _shoot.ShootBullet(this.transform);
+        //_input.Player.ShootLaser.performed += context => LaserShoot();
     }
 
     private void OnEnable()
     {
+        _isActiveShooting = true;
         _input.Enable();
     }
     private void OnDisable()
     {
+        _isActiveShooting = false;
         _input.Disable();
     }
 
@@ -44,11 +49,12 @@ public class PlayerShooting : MonoBehaviour
         ShellsInstantiate();
         _availableLaserCharges = _maxLaserCharges;
         _timer = _rechargeTime;
+
+        StartCoroutine(Shooting());
     }
 
     private void Update()
     {
-        
         if (_availableLaserCharges < _maxLaserCharges)
         {
             _timer -= Time.deltaTime;
@@ -89,6 +95,15 @@ public class PlayerShooting : MonoBehaviour
             var laser = Instantiate(_laserPrefab, _shells);
             _shoot.LaserCharges.Add(laser);
             laser.gameObject.SetActive(false);
+        }
+    }
+
+    private IEnumerator Shooting()
+    {
+        while (_isActiveShooting)
+        {
+            _shoot.ShootBullet(this.transform);
+            yield return new WaitForSeconds(_speedShooting);
         }
     }
 }

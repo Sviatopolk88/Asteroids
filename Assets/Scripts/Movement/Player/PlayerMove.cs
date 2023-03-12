@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
+    [SerializeField] private int _rotationCoefficient = 300;
+
     private const float MAX_SPEED = 6f;
     public float Direction => transform.eulerAngles.z;
     public float Speed => (Mathf.Abs(_speed.x) + Mathf.Abs(_speed.y)) / 2;
@@ -10,8 +12,6 @@ public class PlayerMove : MonoBehaviour
     private ScreenTeleport _teleport;
 
     private Vector2 _speed;
-
-    private int _rotationCoefficient = -300;
 
     private bool _flagAcceleration = false;
 
@@ -33,7 +33,7 @@ public class PlayerMove : MonoBehaviour
     private void Update()
     {
         Vector2 direction = _input.Player.Rotation.ReadValue<Vector2>();
-        transform.Rotate(0, 0, _rotationCoefficient * direction.x * Time.deltaTime);
+        transform.Rotate(0, 0, -_rotationCoefficient * direction.x * Time.deltaTime);
 
         var acceleration = _input.Player.Acceleration.ReadValue<float>();
         Move(acceleration);

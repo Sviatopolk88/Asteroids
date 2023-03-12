@@ -90,7 +90,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""78df2893-7d11-46b1-9909-6fd1ad239932"",
-                    ""path"": ""<Touchscreen>/primaryTouch/press"",
+                    ""path"": ""<Touchscreen>/pressure"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Phone"",
@@ -211,7 +211,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""a3bba8a5-5489-4d4a-ab5b-1df774d84041"",
-                    ""path"": ""<Touchscreen>/primaryTouch/radius"",
+                    ""path"": ""<Touchscreen>/delta"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Phone"",

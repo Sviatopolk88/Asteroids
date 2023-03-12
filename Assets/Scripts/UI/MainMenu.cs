@@ -10,6 +10,8 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _result;
     [SerializeField] private Button _newGameBtn;
     [SerializeField] private GameManager _gameManager;
+    [SerializeField] private GameObject _joystick;
+    [SerializeField] private GameObject _accelerationButton;
 
     private void Start()
     {
@@ -25,6 +27,12 @@ public class MainMenu : MonoBehaviour
     {
         _mainMenu.SetActive(false);
         _gameManager.StartGame();
+
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            _joystick.SetActive(true);
+            _accelerationButton.SetActive(true);
+        }
     }
 
 }
